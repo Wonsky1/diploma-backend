@@ -1,0 +1,48 @@
+# Virtual environments
+.venv
+
+# IDE settings
+.vscode
+
+# Python cache
+__pycache__
+
+# GitHub settings
+.github
+
+# Coverage files
+.coverage
+.coveragerc
+coverage.xml
+
+# Environment variables
+.env
+
+# Flake8 settings
+.flake8
+
+# Git settings
+.gitignore
+
+# Pytest settings
+pytest.ini
+.pytest_cache
+
+# Test directory
+tests
+
+# Readme
+README.md
+
+# Notebooks
+notebooks
+
+embedding_cache
+
+# test data and results
+test_data
+results
+test_.py
+test_matcher_cost.py
+# Development scripts
+scripts/*

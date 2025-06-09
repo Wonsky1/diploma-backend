@@ -1,0 +1,35 @@
+# .pre-commit-config.yaml
+# Auto‑generated on 2025‑05‑17
+# Docs: https://pre-commit.com
+# Install: pip install pre-commit && pre-commit install
+
+minimum_pre_commit_version: "3.6.0"
+
+repos:
+  # --- Python linting & formatting (Ruff) -------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.10           # Pin the Ruff version for repeatability
+    hooks:
+      - id: ruff            # Linter
+        args: ["--fix"]     # Auto‑apply safe fixes; drop to --fix-only to skip lint
+      - id: ruff-format     # Black‑compatible formatter
+
+  # --- Generic hygiene checks ------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: ["--fix=auto"]
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  # --- Secrets scanning -------------------------------------------------
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ["--baseline=.secrets.baseline"]
+        exclude: '^(tests/|scripts/test_|docs/.*\.md$)'

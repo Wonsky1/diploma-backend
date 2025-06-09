@@ -1,0 +1,33 @@
+[run]
+omit =
+    *tools/data_generator.py
+    */tests/*
+    */test_*.py
+    */__init__.py
+    .*/
+    */.*/**
+    */core/config.py
+    */schemas/models.py
+    */prompts/*
+    */tools/data_generator.py
+    */tools/encode.py
+    tools/**/filter_top_technologies.py
+    tools/**/graph_creator/**
+    tools/graph_creator/*.py
+    **/graph_creator/**/*.py
+    **/filter_top_technologies.py
+    real_test_tech_matcher.py
+    test_tech_matcher_simple.py
+    test_pricing.py
+    test_matcher_cost.py
+    *_simple.py
+    dev_data.ipynb
+    *.ipynb
+    scripts/*
+
+branch = True
+
+[report]
+fail_under = 80
+
+show_missing = True

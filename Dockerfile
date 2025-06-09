@@ -1,0 +1,85 @@
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+
+COPY requirements.txt ./
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+ARG DIFY_API_KEY
+ARG ENOM_RESELLER_ID
+ARG ENOM_RESELLER_PASSWORD
+ARG ENOM_TEST_MODE
+ARG NEURALJETS_BASE_LINK
+ARG CF_EMAIL
+ARG CF_API_KEY
+ARG NEURALJETS_USERNAME
+ARG NEURALJETS_PASSWORD
+ARG OPENAI_API_KEY
+ARG RABBITMQ_URL
+ARG COHERE_API_KEY
+ARG COHERE_EMBED_MODEL
+ARG COHERE_RERANK_MODEL
+ARG REDIS_HOST
+ARG REDIS_PORT
+ARG REDIS_PASSWORD
+ARG REDIS_DB
+ARG REDIS_CACHE_TTL
+ARG LIVE_ENOM_RESELLER_ID
+ARG LIVE_ENOM_RESELLER_PASSWORD
+ARG APP_TYPE=api
+
+ENV OPENAI_API_KEY=${OPENAI_API_KEY} \
+    DIFY_API_KEY=${DIFY_API_KEY} \
+    ENOM_RESELLER_ID=${ENOM_RESELLER_ID} \
+    ENOM_RESELLER_PASSWORD=${ENOM_RESELLER_PASSWORD} \
+    ENOM_TEST_MODE=${ENOM_TEST_MODE} \
+    NEURALJETS_BASE_LINK=${NEURALJETS_BASE_LINK} \
+    CF_EMAIL=${CF_EMAIL} \
+    CF_API_KEY=${CF_API_KEY} \
+    NEURALJETS_USERNAME=${NEURALJETS_USERNAME} \
+    NEURALJETS_PASSWORD=${NEURALJETS_PASSWORD} \
+    RABBITMQ_URL=${RABBITMQ_URL} \
+    COHERE_API_KEY=${COHERE_API_KEY} \
+    COHERE_EMBED_MODEL=${COHERE_EMBED_MODEL} \
+    COHERE_RERANK_MODEL=${COHERE_RERANK_MODEL} \
+    REDIS_HOST=${REDIS_HOST} \
+    REDIS_PORT=${REDIS_PORT} \
+    REDIS_PASSWORD=${REDIS_PASSWORD} \
+    REDIS_DB=${REDIS_DB} \
+    REDIS_CACHE_TTL=${REDIS_CACHE_TTL} \
+    LIVE_ENOM_RESELLER_ID=${LIVE_ENOM_RESELLER_ID} \
+    LIVE_ENOM_RESELLER_PASSWORD=${LIVE_ENOM_RESELLER_PASSWORD} \
+    APP_TYPE=${APP_TYPE} \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+    COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+
+RUN python -m spacy download en_core_web_sm
+
+COPY ./schemas ./schemas
+COPY ./core ./core
+COPY ./api ./api
+COPY ./clients ./clients
+COPY ./matchers ./matchers
+COPY ./tools ./tools
+COPY ./prompts ./prompts
+COPY app.py ./
+
+RUN mkdir -p ./data ./models ./embedding_cache
+
+COPY ./data/ ./data/
+
+RUN adduser --disabled-password --gecos "" appuser && \
+    chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8080
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
