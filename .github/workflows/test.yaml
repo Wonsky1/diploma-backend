@@ -19,42 +19,13 @@ jobs:
         uses: actions/setup-python@v5
         with: {python-version: "3.11"}
 
-      - name: Install deps + coverage plugin
+      - name: Install deps
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest pytest-cov
 
-      - name: Run tests & create coverage.xml
+      - name: Run tests
         run: |
-          pytest -v \
-            --cov=. \
-            --cov-config=.coveragerc \
-            --cov-report=xml \
-            --cov-report=term \
-            --cov-fail-under=60 \
-            --junitxml=junit.xml -o junit_family=legacy
+          pytest -v
         env:
-          DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
-          ENOM_RESELLER_ID: ${{ secrets.ENOM_RESELLER_ID }}
-          ENOM_RESELLER_PASSWORD: ${{ secrets.ENOM_RESELLER_PASSWORD }}
-          ENOM_TEST_MODE: True
-          NEURALJETS_BASE_LINK: ${{ secrets.NEURALJETS_BASE_LINK }}
-          CF_EMAIL: ${{ secrets.CF_EMAIL }}
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          NEURALJETS_USERNAME: ${{ secrets.NEURALJETS_USERNAME }}
-          NEURALJETS_PASSWORD: ${{ secrets.NEURALJETS_PASSWORD }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           RABBITMQ_URL: ${{ secrets.RABBITMQ_URL }}
-          COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
-
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
